@@ -31,6 +31,7 @@ import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.WrapperQueryBuilder;
 import org.elasticsearch.rest.BaseRestHandler;
 import org.elasticsearch.rest.BytesRestResponse;
 import org.elasticsearch.rest.RestController;
@@ -61,6 +62,7 @@ public class AknnRestAction extends BaseRestHandler {
     private final String VECTOR_KEY = "_aknn_vector";
     private final Integer K1_DEFAULT = 99;
     private final Integer K2_DEFAULT = 10;
+    private final String FILTER_DEFAULT = "{}";
 
     // TODO: add an option to the index endpoint handler that empties the cache.
     private Map<String, LshModel> lshModelCache = new HashMap<>();
@@ -106,6 +108,7 @@ public class AknnRestAction extends BaseRestHandler {
         final String id = restRequest.param("id");
         final Integer k1 = restRequest.paramAsInt("k1", K1_DEFAULT);
         final Integer k2 = restRequest.paramAsInt("k2", K2_DEFAULT);
+        final String filter = restRequest.param("filter", FILTER_DEFAULT);
         stopWatch.stop();
 
         logger.info("Get query document at {}/{}/{}", index, type, id);
@@ -126,12 +129,13 @@ public class AknnRestAction extends BaseRestHandler {
         stopWatch.stop();
 
         // Retrieve the documents with most matching hashes. https://stackoverflow.com/questions/10773581
+        // http://javadoc.kyubu.de/elasticsearch/HEAD/org/elasticsearch/index/query/WrapperQueryBuilder.html
         logger.info("Build boolean query from hashes");
         stopWatch.start("Build boolean query from hashes");
         QueryBuilder queryBuilder = QueryBuilders.boolQuery();
         for (Map.Entry<String, Long> entry : queryHashes.entrySet()) {
             String termKey = HASHES_KEY + "." + entry.getKey();
-            ((BoolQueryBuilder) queryBuilder).should(QueryBuilders.termQuery(termKey, entry.getValue()));
+            ((BoolQueryBuilder) queryBuilder).filter(new WrapperQueryBuilder(filter)).should(QueryBuilders.termQuery(termKey, entry.getValue()));
         }
         stopWatch.stop();
 
