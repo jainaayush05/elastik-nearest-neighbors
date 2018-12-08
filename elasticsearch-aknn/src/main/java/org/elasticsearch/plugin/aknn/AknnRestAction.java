@@ -108,7 +108,7 @@ public class AknnRestAction extends BaseRestHandler {
         final String id = restRequest.param("id");
         final Integer k1 = restRequest.paramAsInt("k1", K1_DEFAULT);
         final Integer k2 = restRequest.paramAsInt("k2", K2_DEFAULT);
-        final String filter = restRequest.param("filter", FILTER_DEFAULT);
+        final String f = restRequest.param("filter", FILTER_DEFAULT);
         stopWatch.stop();
 
         logger.info("Get query document at {}/{}/{}", index, type, id);
@@ -135,7 +135,7 @@ public class AknnRestAction extends BaseRestHandler {
         QueryBuilder queryBuilder = QueryBuilders.boolQuery();
         for (Map.Entry<String, Long> entry : queryHashes.entrySet()) {
             String termKey = HASHES_KEY + "." + entry.getKey();
-            ((BoolQueryBuilder) queryBuilder).filter(new WrapperQueryBuilder(filter)).should(QueryBuilders.termQuery(termKey, entry.getValue()));
+            ((BoolQueryBuilder) queryBuilder).filter(new WrapperQueryBuilder(f)).should(QueryBuilders.termQuery(termKey, entry.getValue()));
         }
         stopWatch.stop();
 
