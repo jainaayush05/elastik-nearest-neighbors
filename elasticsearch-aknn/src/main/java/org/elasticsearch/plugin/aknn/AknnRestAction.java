@@ -97,6 +97,30 @@ public class AknnRestAction extends BaseRestHandler {
         return Math.sqrt(squaredDistance);
     }
 
+    public static Double cosineDistance(List<Double> A, List<Double> B) {
+        Double dotProduct = 0.0;
+        Double magnitude1 = 0.0;
+        Double magnitude2 = 0.0;
+        Double cosineSimilarity = 0.0;
+
+        for (Integer i = 0; i < A.size(); i++)
+            dotProduct += A.get(i) * B.get(i);  //a.b
+            magnitude1 += Math.pow(A.get(i), 2);  //(a^2)
+            magnitude2 += Math.pow(B.get(i), 2); //(b^2)
+
+
+        magnitude1 = Math.sqrt(magnitude1);//sqrt(a^2)
+        magnitude2 = Math.sqrt(magnitude2);//sqrt(b^2)
+
+        if (magnitude1 != 0.0 | magnitude2 != 0.0) {
+            cosineSimilarity = dotProduct / (magnitude1 * magnitude2);
+        } else {
+            return 0.0;
+        }
+        return cosineSimilarity;
+
+    }
+
     private RestChannelConsumer handleSearchRequest(RestRequest restRequest, NodeClient client) throws IOException {
 
         StopWatch stopWatch = new StopWatch("StopWatch to Time Search Request");
@@ -165,7 +189,7 @@ public class AknnRestAction extends BaseRestHandler {
                 put("_index", hit.getIndex());
                 put("_id", hit.getId());
                 put("_type", hit.getType());
-                put("_score", euclideanDistance(queryVector, hitVector));
+                put("_score", cosineDistance(queryVector, hitVector));
                 put("_source", hitSource);
             }});
         }
