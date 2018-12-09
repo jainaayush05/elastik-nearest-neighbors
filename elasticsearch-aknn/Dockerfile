@@ -13,6 +13,8 @@ WORKDIR /aknn
 RUN yum -y install jdk-10.0.2_linux-x64_bin.rpm
 RUN yum -y install jre-10.0.2_linux-x64_bin.rpm
 ENV JAVA_HOME=/usr/java/jdk-10.0.2/
+RUN rm jdk-10.0.2_linux-x64_bin.rpm
+RUN rm jre-10.0.2_linux-x64_bin.rpm
 
 
 # Install gradle 4.9
