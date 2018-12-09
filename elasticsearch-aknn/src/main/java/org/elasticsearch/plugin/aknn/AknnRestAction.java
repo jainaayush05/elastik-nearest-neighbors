@@ -98,16 +98,16 @@ public class AknnRestAction extends BaseRestHandler {
     }
 
     public static Double cosineDistance(List<Double> A, List<Double> B) {
-        Double dotProduct = 0.0;
-        Double magnitude1 = 0.0;
-        Double magnitude2 = 0.0;
-        Double cosineSimilarity = 0.0;
+        Double dotProduct = 0.;
+        Double magnitude1 = 0.;
+        Double magnitude2 = 0.;
+        Double cosineSimilarity = 0.;
 
-        for (Integer i = 0; i < A.size(); i++)
+        for (Integer i = 0; i < A.size(); i++){
             dotProduct += A.get(i) * B.get(i);  //a.b
             magnitude1 += Math.pow(A.get(i), 2);  //(a^2)
             magnitude2 += Math.pow(B.get(i), 2); //(b^2)
-
+        }
 
         magnitude1 = Math.sqrt(magnitude1);//sqrt(a^2)
         magnitude2 = Math.sqrt(magnitude2);//sqrt(b^2)
